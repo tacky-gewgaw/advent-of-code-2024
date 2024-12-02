@@ -1,6 +1,9 @@
-input = readlines("input.txt")
+inputfile = pwd() * "\\src\\day1\\input.txt"
+
+input = readlines(inputfile)
 
 splitInput = map(line -> Tuple(split(line)), input)
+
 fst = map(i -> parse(Int64,i[1]), splitInput)
 snd = map(i -> parse(Int64,i[2]), splitInput)
 
