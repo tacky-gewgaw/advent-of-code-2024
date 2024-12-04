@@ -1,4 +1,4 @@
-inputfile = pwd() * "\\src\\day2\\input.txt"
+inputfile = joinpath(pwd(),"src","day2","example.txt")
 
 input = readlines(inputfile)
 
