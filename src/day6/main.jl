@@ -100,6 +100,8 @@ input = readlines(inputfile)
 
 s = parse_state(input)
 
+initial_position = s.position
+
 run = true
 
 print_state(s)
@@ -109,4 +111,38 @@ while run
 end
 
 print_state(s)
-println(length(s.visited))
+
+obstacle_candidates = delete!(copy(s.visited),initial_position)
+
+successes = 0
+
+for pos in obstacle_candidates
+    # initialize!
+    run = true
+    it = 0
+    
+    s1 = parse_state(input)
+    push!(s1.obstacles,pos)
+    saved = copy(s1.visited)
+
+    while run
+        it += 1
+
+        run = iterate(s1)
+
+        # every 100 cycles
+        if it % 100 == 0
+            # check whether the set of visited positions has changed
+            if length(saved) == length(s1.visited)
+                # if not, we're looping!
+                successes += 1
+                run = false
+            else
+                # otherwise, save and continue
+                saved = copy(s1.visited)
+            end
+        end
+    end
+end
+
+println(successes)
