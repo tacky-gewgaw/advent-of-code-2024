@@ -16,10 +16,9 @@ parse_update(s) = parse.(Int,split(s, ','))
 
 updates = parse_update.(split(input[2], "\n"))
 
-function check_update(u::Vector{Int})
-    sorteeeeed = sort(u,lt=(x,y) -> tuple(x,y) in rules)
-    return u==sorteeeeed
-end
+my_sort(u::Vector{Int}) = sort(u,lt=(x,y) -> tuple(x,y) in rules)
+
+check_update(u::Vector{Int}) = u==my_sort(u)
 
 result = sum((u -> u[ceil(Int,length(u)/2)]).(filter(check_update, updates)))
 
