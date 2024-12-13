@@ -1,3 +1,5 @@
+using Base.Threads
+
 mutable struct State
     visited::Set{Tuple{Int,Int}}
     obstacles::Set{Tuple{Int,Int}}
@@ -107,16 +109,22 @@ run = true
 print_state(s)
 
 while run
-    run = iterate(s)
+    global run = iterate(s)
 end
 
 print_state(s)
 
-obstacle_candidates = delete!(copy(s.visited),initial_position)
+obstacle_candidates = collect(delete!(copy(s.visited),initial_position))
 
-successes = 0
+num_threads = nthreads()
+results = zeros(Int, num_threads)
+println("Kicking it off in $num_threads threads")
 
-for pos in obstacle_candidates
+Threads.@threads for pos in obstacle_candidates
+    # Get the current thread's ID
+    thread_id = threadid()
+    # println("Thread $thread_id is picking up $pos")
+
     # initialize!
     run = true
     it = 0
@@ -135,7 +143,7 @@ for pos in obstacle_candidates
             # check whether the set of visited positions has changed
             if length(saved) == length(s1.visited)
                 # if not, we're looping!
-                successes += 1
+                results[thread_id] += 1
                 run = false
             else
                 # otherwise, save and continue
@@ -145,4 +153,5 @@ for pos in obstacle_candidates
     end
 end
 
+successes = sum(results)
 println(successes)
