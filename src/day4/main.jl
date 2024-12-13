@@ -1,7 +1,6 @@
 inputfile = joinpath(pwd(),"src","day4","input.txt")
 
 input = readlines(inputfile)
-# input = ["ABCD", "BBAC", "CDAB", "DABC"]
 
 count_occ(v) = count("XMAS",join(v)) + count("SAMX",join(v))
 
@@ -37,3 +36,48 @@ for i in 1-size(m,1):size(m,1)
 end
 
 println(total)
+
+
+function search_x(M, n_row, index)
+    try
+        letter1 = M[n_row,index]
+        letter2 = M[n_row,index+2]
+
+        if M[n_row+1,index+1] == 'A'
+            letter1p = M[n_row+2,index+2]
+            letter2p = M[n_row+2,index]
+
+            return check_opposite(letter1, letter1p) && check_opposite(letter2, letter2p)
+        end
+
+        return false
+    catch e
+        if e isa BoundsError
+            return false
+        end
+    end
+end
+
+function check_opposite(a, b)
+    if a == 'M'
+        return b == 'S'
+    elseif a == 'S'
+        return b == 'M'
+    else
+        return false
+    end
+end
+
+result = 0
+
+for i in axes(m,1)
+    row = join(m[i,:])
+    for j in eachindex(row)
+        char = row[j]
+        if char == 'M' || char == 'S'
+            result += search_x(m,i,j)
+        end
+    end
+end
+
+println(result)
