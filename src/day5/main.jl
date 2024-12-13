@@ -20,6 +20,10 @@ my_sort(u::Vector{Int}) = sort(u,lt=(x,y) -> tuple(x,y) in rules)
 
 check_update(u::Vector{Int}) = u==my_sort(u)
 
-result = sum((u -> u[ceil(Int,length(u)/2)]).(filter(check_update, updates)))
+middle_el(u::Vector{Int}) = u[ceil(Int,length(u)/2)]
+
+result = sum(middle_el.(filter(check_update, updates)))
 
 println(result)
+
+sum(middle_el.(my_sort.(filter(!check_update,updates))))
