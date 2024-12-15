@@ -1,4 +1,5 @@
 using Base.Threads
+using Dates
 
 mutable struct State
     visited::Set{Tuple{Int,Int}}
@@ -106,12 +107,11 @@ initial_position = s.position
 
 run = true
 
-print_state(s)
-
 while run
     global run = iterate(s)
 end
 
+println("End state:")
 print_state(s)
 
 obstacle_candidates = collect(delete!(copy(s.visited),initial_position))
@@ -119,6 +119,7 @@ obstacle_candidates = collect(delete!(copy(s.visited),initial_position))
 num_threads = nthreads()
 results = zeros(Int, num_threads)
 println("Kicking it off in $num_threads threads")
+start_time = Dates.now()
 
 Threads.@threads for pos in obstacle_candidates
     # Get the current thread's ID
@@ -155,3 +156,5 @@ end
 
 successes = sum(results)
 println(successes)
+running_time = Dates.now() - start_time
+println("Simulation took $running_time")
