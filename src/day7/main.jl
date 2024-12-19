@@ -1,5 +1,3 @@
-using Dates
-
 inputfile = joinpath(pwd(),"src","day7","input.txt")
 
 input = readlines(inputfile)
@@ -19,43 +17,28 @@ function conc(x,y)
     return parse(Int,res)
 end
 
-function check_equation(e::Tuple{Int,Vector{Int}}, concat::Bool=false)
-    if e[2] == []
-        println("1")
-        return false
+function check_inverse(target::Int, eq::Vector{Int}, concat::Bool=false)
+    list = Set{Int}(target)
+
+    for x in reverse(eq[2:end])
+        newList::Set{Int} = Set{Int}()
+        for y in list
+            if y-x>=0
+                push!(newList,y-x)
+            end
+
+            if mod(y,x)==0
+                push!(newList,div(y,x))
+            end
+
+            if concat && length(string(y)) > length(string(x)) && endswith(string(y),string(x))
+                    push!(newList,parse(Int,string(y)[1:end-length(string(x))]))
+            end
+        end
+        list = newList
     end
-
-    (x, tail) = Iterators.peel(e[2])
-    rest = collect(tail)
-
-    if x > e[1]
-        return false
-    end
-
-    if rest == []
-        return x == e[1]
-    else
-        (y, tail) = Iterators.peel(rest)
-        return check_equation((e[1],vcat([x+y],collect(tail))),concat) |
-                check_equation((e[1],vcat([x*y],collect(tail))),concat) | (
-                    concat ? check_equation((e[1],vcat([conc(x,y)],collect(tail))),concat) : false
-                )
-    end
-
-
-
+    return eq[1] in list
 end
 
-start_time = Dates.now()
-
-println(sum(first.(filter(check_equation,equations))))
-
-running_time = Dates.now() - start_time
-println("Calculation took $running_time")
-
-start_time1 = Dates.now()
-
-println(sum(first.(filter(t -> check_equation(t,true),equations))))
-
-running_time1 = Dates.now() = start_time1
-println("Calculation took $running_time")
+println(sum(first.(filter(q -> check_inverse(q[1],q[2]),equations))))
+println(sum(first.(filter(q -> check_inverse(q[1],q[2],true),equations))))
